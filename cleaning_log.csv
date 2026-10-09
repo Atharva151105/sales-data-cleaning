@@ -1,0 +1,17 @@
+step,issue,action,rows_before,rows_after,rows_removed,cells_changed,reason
+1,Exact duplicate rows,"Dropped, kept first",5120,5000,120,0,Same order exported twice by different systems; counting both would double revenue.
+2,Duplicate order_id with differing values,Dropped extra rows (none found),5000,5000,0,0,order_id should be unique.
+3,Leading/trailing/double whitespace,Stripped all text columns,5000,5000,0,860,' Delhi ' and 'Delhi' are the same value but group separately.
+4,Inconsistent case / aliases,"Title-cased city/category, 'upi'->'UPI', 'Bangalore'->'Bengaluru'",5000,5000,0,1266,41 city and 25 category spellings collapse to 8 cities and 5 categories.
+5,"Mixed date formats (dd-mm-yyyy, dd-Mon-yy, mm-dd-yyyy)",Parsed all three into ISO yyyy-mm-dd,5000,5000,0,5000,"140 dates were month-first (day>12, unambiguous) and rescued; 0 unparseable dropped. Caveat: month-first dates with both parts <=12 are indistinguishable and were read as day-first."
+6,"Invalid quantity (0, -1, 500)",Dropped rows,5000,4944,56,0,Every valid order has quantity 1-4. 0/-1 cannot be a real sale; 500 is 125x the max normal order (likely a typo) and the true value is unrecoverable. Dropping is safer than guessing.
+7,Placeholder prices (0 and 250000),Set to missing before imputing,4944,4944,0,32,"0 and 250,000 are system sentinel values: every product's real prices sit within about +/-10% of its median."
+8,Missing unit_price,Filled with the product's median price (flagged in price_imputed),4944,4944,0,181,"Prices are tight within a product (CV ~3-8%), so the product median is a reliable estimate. Median, not mean, so outliers do not bias it."
+9,Impossible discount (150%),Divided by 10 -> 15%,4944,4944,0,10,Valid discounts are only 0/5/10/15/20; 150 is a decimal-shift typo of 15. A >100% discount is impossible.
+10,Missing discount_pct,Filled with 0 (flagged in discount_imputed),4944,4944,0,119,"0 is the most common value (~43%) and absence of a recorded discount is most plausibly 'no discount'. Order-level, so can't be recovered from other columns."
+11,Missing city,Recovered from the customer's other orders (most frequent city),4944,4944,0,172,A customer_id maps to one city in 95% of cases.
+12,Missing city (unrecoverable),Labelled 'Unknown',4944,4944,0,7,Customer has no other order with a city; excluded from city ranking.
+13,Missing customer_name,Recovered 88 via customer_id; 2 labelled 'Unknown',4944,4944,0,90,customer_id -> name is 1:1 in the file.
+14,Missing payment_method,Labelled 'Unknown',4944,4944,0,39,"Categorical, no reliable signal to infer; honest label beats a guess."
+15,Revenue column,revenue = quantity x unit_price x (1 - discount_pct/100),4944,4944,0,4944,Required derived field.
+16,Residual outlier check (price >5 SD from product median),Reviewed; none altered,4944,4944,0,0,No remaining anomalies.

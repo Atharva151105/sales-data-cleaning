@@ -1,0 +1,28 @@
+DATA-QUALITY SUMMARY (raw file)
+============================================================
+Rows: 5120   Columns: 12
+
+Missing values per column:
+customer_name      93
+city              186
+unit_price        153
+discount_pct      123
+payment_method     40
+
+Exact duplicate rows: 120   Duplicate order_ids: 120
+
+city: 41 distinct raw spellings -> 8 after trim/case/alias fix
+
+category: 25 distinct raw spellings -> 5 after trim/case/alias fix
+
+payment_method: 6 distinct raw spellings -> 5 after trim/case/alias fix
+
+Date formats present:
+order_date
+dd-mm-yyyy or mm-dd-yyyy (10 chars)    4394
+dd-Mon-yy (9 chars)                     726
+
+quantity <= 0: 52  | quantity >= 100: 6
+unit_price == 0: 26  | unit_price == 250000 (placeholder): 8
+discount_pct > 100: 10
+customer_name with stray whitespace: 0
