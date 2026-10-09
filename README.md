@@ -22,3 +22,6 @@
 
 ## Revenue definition
 `revenue = quantity × unit_price × (1 − discount_pct/100)` is computed for every row. Headline analysis uses **Delivered orders only** (Cancelled/Returned aren't real revenue); the dashboard has a toggle for all orders.
+
+python -X utf8 clean_data.py sales_data.csv
+streamlit run app.py 
